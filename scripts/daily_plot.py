@@ -196,11 +196,6 @@ def main(daemon, sleep_m):
     last_run = None
     while True:
         now = datetime.now()
-        # now = datetime.strptime('2023-12-13T23:59:59', "%Y-%m-%dT%H:%M:%S")
-        # now = datetime.strptime('2024-01-02T23:59:59', "%Y-%m-%dT%H:%M:%S")
-        # now = datetime.strptime('2024-02-26T23:59:59', "%Y-%m-%dT%H:%M:%S")
-        # now = datetime.strptime('2024-04-03T23:59:59', "%Y-%m-%dT%H:%M:%S")
-        # now = datetime.strptime('2024-04-07T23:59:59', "%Y-%m-%dT%H:%M:%S")
         if last_run and now.day != last_run.day:
             print("getting yesterday's dataset")
             yesterday = last_run.replace(hour=23, minute=59)
