@@ -13,7 +13,7 @@ HOME="${HOME:-/home/pi}"
 source /etc/birdnet/birdnet.conf &>/dev/null
 
 # Get arguments
-OLDNAME="$1" #OLDNAME="Mésange_charbonnière-78-2024-05-02-birdnet-RTSP_1-18-14-08.mp3"
+OLDNAME="$1" #OLDNAME="Mésange_charbonnière-78-2024-05-02-birdnet-RTSP_1-18:14:08.mp3"
 NEWNAME="$2" #NEWNAME="Lapinus atricapilla_Lapinu à tête noire"
 
 # Set log level
@@ -98,11 +98,11 @@ if [[ -f $FILE_PATH ]]; then
     # Ensure the new directory exists
     NEW_DIR="$HOME/BirdSongs/Extracted/By_Date/$OLDNAME_date/$NEWNAME_comname_safe"
     mkdir -p "$NEW_DIR"
-
+    
     # Move and rename the file
     mv "$FILE_PATH" "$NEW_DIR/$NEWNAME_filename"
     mv "$FILE_PATH".png "$NEW_DIR/$NEWNAME_filename".png
-
+    
     [[ "$OUTPUT_TYPE" == "debug" ]] && echo "Files moved!"
 else
     echo "Error: File $FILE_PATH does not exist"
