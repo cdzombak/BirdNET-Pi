@@ -150,7 +150,7 @@ if(isset($_GET["latitude"])){
   $contents = preg_replace("/APPRISE_WEEKLY_REPORT=.*/", "APPRISE_WEEKLY_REPORT=$apprise_weekly_report", $contents);
   $contents = preg_replace("/IMAGE_PROVIDER=.*/", "IMAGE_PROVIDER=$image_provider", $contents);
   $contents = preg_replace("/FLICKR_API_KEY=.*/", "FLICKR_API_KEY=$flickr_api_key", $contents);
-  if(strlen($language) == 2){
+  if(strlen($language) == 2 || strlen($language) == 5){
     $contents = preg_replace("/DATABASE_LANG=.*/", "DATABASE_LANG=$language", $contents);
   }
   $contents = preg_replace("/INFO_SITE=.*/", "INFO_SITE=$info_site", $contents);
@@ -197,23 +197,9 @@ if(isset($_GET["latitude"])){
 }
 
 if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
-  $db = new SQLite3($home."/BirdNET-Pi/scripts/birds.db", SQLITE3_OPEN_READONLY);
-  $db->busyTimeout(1000);
-  $statement0 = $db->prepare('SELECT * FROM detections ORDER BY Date DESC, Time DESC LIMIT 1');
-  $result0 = $statement0->execute();
-  while($todaytable=$result0->fetchArray(SQLITE3_ASSOC))
-  {
-    $detection = json_encode($todaytable);
-  }
-
   $conf = $_GET['apprise_config'];
   $title = $_GET['apprise_notification_title'];
   $body = $_GET['apprise_notification_body'];
-
-  $temp_det = tmpfile();
-  $t_det_path = stream_get_meta_data($temp_det)['uri'];
-  chmod($t_det_path, 0644);
-  fwrite($temp_det, $detection);
 
   $temp_conf = tmpfile();
   $t_conf_path = stream_get_meta_data($temp_conf)['uri'];
@@ -225,10 +211,9 @@ if(isset($_GET['sendtest']) && $_GET['sendtest'] == "true") {
   chmod($t_body_path, 0644);
   fwrite($temp_body, $body);
 
-  $cmd = "sudo -u $user $home/BirdNET-Pi/birdnet/bin/python3 $home/BirdNET-Pi/scripts/send_test_notification.py --body $t_body_path --config $t_conf_path --title '" . escapeshellcmd($title) . "' --detection $t_det_path 2>&1";
+  $cmd = "sudo -u $user $home/BirdNET-Pi/birdnet/bin/python3 $home/BirdNET-Pi/scripts/send_test_notification.py --body $t_body_path --config $t_conf_path --title '" . escapeshellcmd($title) . "' 2>&1";
   $ret = shell_exec($cmd);
   echo "<pre class=\"bash\">".$ret."</pre>";
-  fclose($temp_det);
   fclose($temp_conf);
   fclose($temp_body);
 
@@ -540,7 +525,8 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
           "ar" => "Arabic",
           "ca" => "Catalan",
           "cs" => "Czech",
-          "zh" => "Chinese",
+          "zh_CN" => "Chinese (simplified)",
+          "zh_TW" => "Chinese (traditional)",
           "hr" => "Croatian",
           "da" => "Danish",
           "nl" => "Dutch",
@@ -569,7 +555,8 @@ https://discordapp.com/api/webhooks/{WebhookID}/{WebhookToken}
           "sv" => "Swedish",
           "th" => "Thai",
           "tr" => "Turkish",
-          "uk" => "Ukrainian"
+          "uk" => "Ukrainian",
+          "vi" => "Vietnamese"
         );
 
         // Create options for each language

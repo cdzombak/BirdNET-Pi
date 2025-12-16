@@ -133,6 +133,11 @@ if ! grep -E '^IMAGE_PROVIDER=' /etc/birdnet/birdnet.conf &>/dev/null;then
   echo "IMAGE_PROVIDER=${PROVIDER}" >> /etc/birdnet/birdnet.conf
 fi
 
+if grep -E '^DATABASE_LANG=zh$' /etc/birdnet/birdnet.conf &>/dev/null;then
+  sed -i --follow-symlinks -E 's/^DATABASE_LANG=zh/DATABASE_LANG=zh_CN/' /etc/birdnet/birdnet.conf
+  install_language_label.sh
+fi
+
 [ -d $RECS_DIR/StreamData ] || sudo_with_user mkdir -p $RECS_DIR/StreamData
 [ -L ${EXTRACTED}/spectrogram.png ] || sudo_with_user ln -sf ${RECS_DIR}/StreamData/spectrogram.png ${EXTRACTED}/spectrogram.png
 
@@ -253,10 +258,10 @@ AUTH=$(grep basicauth /etc/caddy/Caddyfile)
 [ -n "${CADDY_PWD}" ] && [ -z "${AUTH}" ] && sudo /usr/local/bin/update_caddyfile.sh > /dev/null 2>&1
 set -x
 
-if ! [ -L $HOME/BirdNET-Pi/model/labels_flickr.txt ]; then
-  sudo_with_user ln -sf labels_nm/labels_en.txt $HOME/BirdNET-Pi/model/labels_flickr.txt
+if [ -L $HOME/BirdNET-Pi/model/labels_flickr.txt ]; then
+  rm $HOME/BirdNET-Pi/model/labels_flickr.txt
 fi
-if ! [ -L $HOME/BirdNET-Pi/model/labels.txt ]; then
+if [ -L $HOME/BirdNET-Pi/model/labels.txt ]; then
   sudo_with_user install_language_label.sh
 fi
 
